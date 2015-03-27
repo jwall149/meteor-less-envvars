@@ -1,7 +1,7 @@
 Package.describe({
   name: "jwall149:less-env-globalvars",
   summary: "The offical LESS + Environment Global Variables",
-  version: "1.0.0",
+  version: "1.0.1",
   git: "https://github.com/jwall149/meteor-less-envvars"
 });
 

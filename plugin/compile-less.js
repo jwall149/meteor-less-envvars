@@ -2,26 +2,30 @@ var fs = Npm.require('fs');
 var path = Npm.require('path');
 var less = Npm.require('less');
 var Future = Npm.require('fibers/future');
-var globalVars = {};
+var envGlobalVars = {}, envModifyVars = {};
 
 Plugin.registerSourceHandler("less", {archMatching: 'web'}, function (compileStep) {
   var source = compileStep.read().toString('utf8');
 
-  function parseGlobalVars(options){
+  function parseEnvVars(options){
     try {
       var res = JSON.parse(options);
       if (res) return res;
     }
     catch (e) {
-      console.log("\n less-env-globalvars: invalid JSON format in LESS_GLOBALVARS -", e);
+      console.log("\n less-env-globalvars: invalid JSON format in LESS_GLOBALVARS or LESS_MODIFYVARS-", e);
     }
     return {};
   };
 
   // Parse LESS_GLOBALVARS options enviroment variable
   if (process.env.LESS_GLOBALVARS) {
-    globalVars = parseGlobalVars(process.env.LESS_GLOBALVARS);
+    envGlobalVars = parseEnvVars(process.env.LESS_GLOBALVARS);
   };
+
+  if (process.env.LESS_MODIFYVARS) {
+    envModifyVars = parseEnvVars(process.env.LESS_MODIFYVARS);
+  }
 
   var options = {
     filename: compileStep.inputPath,
@@ -37,7 +41,7 @@ Plugin.registerSourceHandler("less", {archMatching: 'web'}, function (compileSte
   var astFuture = new Future;
   var sourceMap = null;
   try {
-    parser.parse(source, astFuture.resolver(), {globalVars: globalVars});
+    parser.parse(source, astFuture.resolver(), {globalVars: envGlobalVars, modifyVars: envModifyVars});
     var ast = astFuture.wait();
 
     var css = ast.toCSS({

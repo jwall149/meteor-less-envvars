@@ -7,6 +7,27 @@
 ## Configuration
 You can pass global variables by setting `LESS_GLOBALVARS` environment variable: `export LESS_GLOBALVARS='{ "global_color": red}'`
 
+At your `.less` you can declare:
+```
+.test {
+  color: @global_color;
+}
+```
+
+You now can also add `LESS_MODIFYVARS` environment variable to change some of the variable in the less file.
+
+Example:
+
+`export LESS_MODIFYVARS='{ "main_color": white}'`
+
+
+## Common Pitfall
+Not escape single quote and double quote
+
+`LESS_GLOBALVARS='{"image_path": "/"}'`
+will raise compile error, it should be:
+
+`LESS_GLOBALVARS='{"image_path": "'/'"}'`
 
 ###Credits:
 [Tonny Pham](https://github.com/jwall149)
